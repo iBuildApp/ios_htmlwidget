@@ -11,6 +11,10 @@ import AppBuilderCore
 import AppBuilderCoreUI
 
 public class HtmlModule: BaseModule, ModuleType {
+    public var moduleRouter: AnyRouter { return router }
+    
+    private var router: HtmlModuleRouter = HtmlModuleRouter()
+    
     public override class func canHandle(config: WidgetModel) -> Bool {
         if config.type == "html" {
             return true
