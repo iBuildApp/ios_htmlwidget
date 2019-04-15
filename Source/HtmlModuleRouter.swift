@@ -74,6 +74,8 @@ class HtmlController: BaseViewController, WKNavigationDelegate {
             
             webView.load(URLRequest(url: url))
             webView.allowsBackForwardNavigationGestures = true
+        } else if let code = self.data?.code {
+            
         }
     }
     

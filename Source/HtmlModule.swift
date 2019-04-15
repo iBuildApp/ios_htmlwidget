@@ -16,14 +16,16 @@ public class HtmlModule: BaseModule, ModuleType {
     public var moduleRouter: AnyRouter { return router }
     
     private var router: HtmlModuleRouter!
-    private var config: WidgetModel?
+    internal var config: WidgetModel?
     internal var data: DataModel?
     
     public override class func canHandle(config: WidgetModel) -> Bool {
-        if config.type == "html" {
+        switch config.type {
+        case "html", "facebook", "calendar", "googleform":
             return true
+        default:
+            return false
         }
-        return false
     }
     
     public required init() {
@@ -48,6 +50,7 @@ struct DataModel: Codable, XMLMappable {
     public var content: String?
     public var plugins: String?
     public var code: String?  // case for google calendar
+    public var facebookUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case title
@@ -55,6 +58,7 @@ struct DataModel: Codable, XMLMappable {
         case content = "content"
         case plugins
         case code
+        case facebookUrl = "fbook_url"
     }
     
     // XML Mapping
@@ -70,5 +74,6 @@ struct DataModel: Codable, XMLMappable {
         content <- map["content"]
         plugins <- map["plugins"]
         code <- map["code"]  // case for google calendar
+        facebookUrl <- map["fbook_url"]
     }
 }
