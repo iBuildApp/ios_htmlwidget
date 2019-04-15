@@ -9,13 +9,20 @@ import Foundation
 import AppBuilderCore
 import AppBuilderCoreUI
 
+import WebKit
+
 public enum HtmlModuleRoute: Route {
     case root
 }
 
 public class HtmlModuleRouter: BaseRouter<HtmlModuleRoute> {
+    var module: HtmlModule?
+    init(with module: HtmlModule) {
+        self.module = module
+    }
+    
     public override func prepareTransition(for route: HtmlModuleRoute) -> RouteTransition {
-        return RouteTransition(module: HtmlController(name: "HTML Module"), isRoot: false, isAnimated: true, showNavigationBar: true, showTabBar: false)
+        return RouteTransition(module: HtmlController(data: module?.data), isRoot: false, isAnimated: true, showNavigationBar: true, showTabBar: false)
     }
     
     public override func rootTransition() -> RouteTransition {
@@ -23,28 +30,60 @@ public class HtmlModuleRouter: BaseRouter<HtmlModuleRoute> {
     }
 }
 
-class HtmlController: BaseViewController {
-    private var name = ""
-    public convenience init(name: String) {
+class HtmlController: BaseViewController, WKNavigationDelegate {
+    
+    var webView: WKWebView!
+    private var data: DataModel?
+    
+    private var activityIndicator: UIActivityIndicatorView?
+    
+    public convenience init(data: DataModel?) {
         self.init()
-        self.name = name
+        self.data = data
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.cyan
+        self.loadView()
         
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        label.text = self.name
-        self.view.addSubview(label)
+        if let title = self.data?.title {
+            self.title = title
+        }
         
-        label.sizeToFit()
-        label.translatesAutoresizingMaskIntoConstraints = false
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicator.color = UIColor.darkGray
+        self.view.addSubview(activityIndicator)
+        activityIndicator.stopAnimating()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         
-        let horizontalConstraint = NSLayoutConstraint(item: label, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
+        let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
         self.view.addConstraint(horizontalConstraint)
         
-        let verticalConstraint = NSLayoutConstraint(item: label, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0)
+        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0)
         self.view.addConstraint(verticalConstraint)
+        
+        self.activityIndicator = activityIndicator
+        
+        if let content = self.data?.content {
+            //Show content
+            webView.loadHTMLString(content, baseURL: nil)
+        } else if let src = self.data?.src, let url = URL(string: src) {
+            // Show from url
+            activityIndicator.startAnimating()
+            
+            webView.load(URLRequest(url: url))
+            webView.allowsBackForwardNavigationGestures = true
+        }
+    }
+    
+    override func loadView() {
+        webView = WKWebView()
+        webView.navigationDelegate = self
+        view = webView
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        self.activityIndicator?.stopAnimating()
     }
 }

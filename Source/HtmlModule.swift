@@ -15,8 +15,9 @@ import XMLMapper
 public class HtmlModule: BaseModule, ModuleType {
     public var moduleRouter: AnyRouter { return router }
     
-    private var router: HtmlModuleRouter = HtmlModuleRouter()
+    private var router: HtmlModuleRouter!
     private var config: WidgetModel?
+    internal var data: DataModel?
     
     public override class func canHandle(config: WidgetModel) -> Bool {
         if config.type == "html" {
@@ -27,12 +28,14 @@ public class HtmlModule: BaseModule, ModuleType {
     
     public required init() {
         print("\(type(of: self)).\(#function)")
+        super.init()
+        router = HtmlModuleRouter(with: self)
     }
     
     public func setConfig(_ model: WidgetModel) {
         self.config = model
         if let data = model.data, let dataModel = DataModel(map: data) {
-            print("Parsed: \(dataModel)")
+            self.data = dataModel
         } else {
             print("Error parsing!")
         }
@@ -44,12 +47,14 @@ struct DataModel: Codable, XMLMappable {
     public var src: String?
     public var content: String?
     public var plugins: String?
+    public var code: String?  // case for google calendar
     
     enum CodingKeys: String, CodingKey {
         case title
         case src = "@src"
         case content = "content"
         case plugins
+        case code
     }
     
     // XML Mapping
@@ -64,5 +69,6 @@ struct DataModel: Codable, XMLMappable {
         src <- map.attributes["content.src"]
         content <- map["content"]
         plugins <- map["plugins"]
+        code <- map["code"]  // case for google calendar
     }
 }
