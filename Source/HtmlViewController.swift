@@ -115,4 +115,32 @@ class HtmlViewController: BaseViewController, WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.activityIndicator?.stopAnimating()
     }
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        print("webView:\(webView) decidePolicyForNavigationAction:\(navigationAction) decisionHandler:\(String(describing: decisionHandler))")
+        
+        switch navigationAction.navigationType {
+        case .formSubmitted:
+            if let url = navigationAction.request.url, url.host == "www.paypal.com" {
+                print(url.absoluteString)
+                
+                var link = url.absoluteString
+                
+                if let httpBody = navigationAction.request.httpBody, let httpBodyString = String(data: httpBody, encoding: String.Encoding.utf8) {
+                    link = link.appendingFormat("?%@", httpBodyString)
+                    link = link.appending("&bn=ibuildapp_SP")
+                }
+                
+                if let remoteUrl = URL(string: link) {
+                    print(remoteUrl.absoluteString)
+                    UIApplication.shared.open(remoteUrl, options: [:], completionHandler: nil)
+                }
+                decisionHandler(.cancel)
+                return
+            }
+        default:
+            break
+        }
+        decisionHandler(.allow)
+    }
 }
