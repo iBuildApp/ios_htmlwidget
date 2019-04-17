@@ -19,8 +19,12 @@ public class HtmlModuleRouter: BaseRouter<HtmlModuleRoute> {
         self.module = module
     }
     
+    public override func generateRootViewController() -> BaseViewController {
+        return HtmlViewController(type: module?.config?.type, data: module?.data)
+    }
+    
     public override func prepareTransition(for route: HtmlModuleRoute) -> RouteTransition {
-        return RouteTransition(module: HtmlViewController(type: module?.config?.type, data: module?.data), isRoot: false, isAnimated: true, showNavigationBar: true, showTabBar: false)
+        return RouteTransition(module: generateRootViewController(), isAnimated: true, showNavigationBar: true, showTabBar: false)
     }
     
     public override func rootTransition() -> RouteTransition {
