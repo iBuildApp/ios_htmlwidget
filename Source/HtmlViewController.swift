@@ -27,7 +27,14 @@ class HtmlViewController: BaseViewController, WKNavigationDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.loadView()
+        
+        if let plugins = self.data?.plugins {
+            let wrapper = "<plugins>\(plugins)</plugins>"
+            let scripts = XMLMapper<ScriptsWrapperModel>().map(XMLString: wrapper)
+            self.loadView(with: scripts?.scripts)
+        } else {
+            self.loadView(with: nil)
+        }
         
         if let title = self.data?.title {
             self.title = title
@@ -106,8 +113,29 @@ class HtmlViewController: BaseViewController, WKNavigationDelegate {
         }
     }
     
-    override func loadView() {
-        webView = WKWebView()
+    func loadView(with scripts: [ScriptModel]?) {
+        let contentController = WKUserContentController()
+        
+        if let scripts = scripts {
+            for script in scripts {
+                if let src = script.src, let type = script.type {
+                    let script = """
+                    var script = document.createElement('script');
+                    script.src = '\(src)';
+                    script.type = '\(type)t';
+                    document.getElementsByTagName('head')[0].appendChild(script);
+                    """
+                    let userScript = WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+                    
+                    contentController.addUserScript(userScript)
+                }
+            }
+        }
+        
+        let webViewConfiguration = WKWebViewConfiguration()
+        webViewConfiguration.userContentController = contentController
+        
+        webView = WKWebView(frame: CGRect.zero, configuration: webViewConfiguration)
         webView.navigationDelegate = self
         view = webView
     }
