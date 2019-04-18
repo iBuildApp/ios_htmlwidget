@@ -264,7 +264,18 @@ extension HtmlViewController: WKNavigationDelegate {
             self.forwardButton?.isEnabled = webView.canGoForward
         case .linkActivated:
             if let url = navigationAction.request.url, url.scheme == "mailto" {
-                print("Show native mail controller")
+                let email = url.absoluteString.replacingOccurrences(of: "mailto:", with: "")
+                
+                var subject = ""
+                let showLink = AppManager.manager.appModel()?.design?.showLink == 1
+                if showLink {
+                    subject = NSLocalizedString("mWeb_sentFromiBuildApp", comment: "Sent from iBuildApp")
+                }
+                
+                if email.isValidEmail() {
+                    AppCoreServices.showMailComposer(with: [email], subject: subject, body: "", attachment: nil, for: self)
+                }
+                
                 decisionHandler(.cancel)
                 return
             }
@@ -296,3 +307,7 @@ extension HtmlViewController: WKNavigationDelegate {
         decisionHandler(.allow)
     }
 }
+
+import MessageUI
+
+extension HtmlViewController: MFMailComposeViewControllerDelegate { }
