@@ -263,21 +263,30 @@ extension HtmlViewController: WKNavigationDelegate {
             self.backButton?.isEnabled = webView.canGoBack
             self.forwardButton?.isEnabled = webView.canGoForward
         case .linkActivated:
-            if let url = navigationAction.request.url, url.scheme == "mailto" {
-                let email = url.absoluteString.replacingOccurrences(of: "mailto:", with: "")
-                
-                var subject = ""
-                let showLink = AppManager.manager.appModel()?.design?.showLink == 1
-                if showLink {
-                    subject = NSLocalizedString("mWeb_sentFromiBuildApp", comment: "Sent from iBuildApp")
+            if let url = navigationAction.request.url {
+                switch url.scheme {
+                case "mailto":
+                    let email = url.absoluteString.replacingOccurrences(of: "mailto:", with: "")
+                    
+                    var subject = ""
+                    let showLink = AppManager.manager.appModel()?.design?.showLink == 1
+                    if showLink {
+                        subject = NSLocalizedString("mWeb_sentFromiBuildApp", comment: "Sent from iBuildApp")
+                    }
+                    
+                    if email.isValidEmail() {
+                        AppCoreServices.showMailComposer(with: [email], subject: subject, body: "", attachment: nil, for: self)
+                    }
+                    
+                    decisionHandler(.cancel)
+                    return
+                case "tel":
+                    print("Show native phone caller")
+                    decisionHandler(.cancel)
+                    return
+                default:
+                    break
                 }
-                
-                if email.isValidEmail() {
-                    AppCoreServices.showMailComposer(with: [email], subject: subject, body: "", attachment: nil, for: self)
-                }
-                
-                decisionHandler(.cancel)
-                return
             }
             
             if navigationAction.targetFrame == nil {
