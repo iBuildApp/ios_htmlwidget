@@ -281,7 +281,7 @@ extension HtmlViewController: WKNavigationDelegate {
                     decisionHandler(.cancel)
                     return
                 case "tel":
-                    print("Show native phone caller")
+                    AppCoreServices.callNumber(by: url)
                     decisionHandler(.cancel)
                     return
                 case "http", "https", "file":
