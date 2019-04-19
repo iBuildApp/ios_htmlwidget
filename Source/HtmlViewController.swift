@@ -284,8 +284,12 @@ extension HtmlViewController: WKNavigationDelegate {
                     print("Show native phone caller")
                     decisionHandler(.cancel)
                     return
-                default:
+                case "http", "https", "file":
                     break
+                default:
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    decisionHandler(.cancel)
+                    return
                 }
             }
             
