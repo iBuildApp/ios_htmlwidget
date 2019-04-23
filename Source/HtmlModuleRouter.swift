@@ -19,7 +19,7 @@ public class HtmlModuleRouter: BaseRouter<HtmlModuleRoute> {
         self.module = module
     }
     
-    public override func generateRootViewController() -> BaseViewController {
+    public override func generateRootViewController() -> BaseViewControllerType {
         return HtmlViewController(type: module?.config?.type, data: module?.data)
     }
     
