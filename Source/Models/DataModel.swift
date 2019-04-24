@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import XMLMapper
 
-internal struct DataModel: Codable, XMLMappable {
+internal struct DataModel: Codable {
     public var title: String?
     public var src: String?
     public var content: String?
@@ -17,27 +16,27 @@ internal struct DataModel: Codable, XMLMappable {
     public var facebookUrl: String?
     
     enum CodingKeys: String, CodingKey {
-        case title
+        case title = "#title"
         case src = "@src"
-        case content = "content"
-        case plugins
-        case code
-        case facebookUrl = "fbook_url"
+        case content = "#content"
+        case plugins = "#plugins"
+        case code = "#code"
+        case facebookUrl = "#fbook_url"
     }
     
-    // XML Mapping
-    public var nodeName: String! = "data"
-    
-    public init?(map: XMLMap) {
+    public init?(map: [String: Any]) {
         self.mapping(map: map)
     }
     
-    public mutating func mapping(map: XMLMap) {
-        title <- map["title"]
-        src <- map.attributes["content.src"]
-        content <- map["content"]
-        plugins <- map["plugins"]
-        code <- map["code"]  // case for google calendar
-        facebookUrl <- map["fbook_url"]
+    public mutating func mapping(map: [String: Any]) {
+        title = map[CodingKeys.title.rawValue] as? String
+        if let content = map[CodingKeys.content.rawValue] as? String {
+            self.content = content
+        } else if let content = map["content"] as? [String: Any] {
+            src = content[CodingKeys.src.rawValue] as? String
+        }
+        plugins = map[CodingKeys.plugins.rawValue] as? String
+        code = map[CodingKeys.code.rawValue] as? String
+        facebookUrl = map[CodingKeys.facebookUrl.rawValue] as? String
     }
 }

@@ -269,7 +269,7 @@ extension HtmlViewController: WKNavigationDelegate {
                     let email = url.absoluteString.replacingOccurrences(of: "mailto:", with: "")
                     
                     var subject = ""
-                    let showLink = AppManager.manager.appModel()?.design?.showLink == 1
+                    let showLink = AppManager.manager.appModel()?.design?.isShowLink ?? false
                     if showLink {
                         subject = NSLocalizedString("mWeb_sentFromiBuildApp", comment: "Sent from iBuildApp")
                     }
