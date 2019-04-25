@@ -271,7 +271,7 @@ extension HtmlViewController: WKNavigationDelegate {
                     var subject = ""
                     let showLink = AppManager.manager.appModel()?.design?.isShowLink ?? false
                     if showLink {
-                        subject = NSLocalizedString("Email.Message.SentFrom", comment: "Sent from iBuildApp")
+                        subject = Localization.Email.Message.sentFrom
                     }
                     
                     if email.isValidEmail() {
