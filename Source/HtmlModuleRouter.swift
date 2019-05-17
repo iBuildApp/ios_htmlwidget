@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import AppBuilderCore
-import AppBuilderCoreUI
+import IBACore
+import IBACoreUI
 
 public enum HtmlModuleRoute: Route {
     case root
