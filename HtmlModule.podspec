@@ -19,7 +19,7 @@ Pod::Spec.new do |spec|
   spec.license        = 'COMMERCIAL'
   spec.author         = { 'Anton Boyarkin' => 'anton.boyarkin@icloud.com' }
   spec.platform       = :ios, '10.0'
-  spec.source         = { :git => '', :tag => '#{spec.version}' }
+  spec.source         = { :git => 'git@gitlab.vladimir.ibuildapp.com:ios/htmlmodule.git', :tag => '#{spec.version}' }
   spec.source_files   = 'Source/*.swift', 'Source/**/*.swift'
   spec.frameworks     = 'UIKit', 'Foundation'
   spec.dependency       'IBACore'
