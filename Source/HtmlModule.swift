@@ -20,12 +20,25 @@ public class HtmlModule: BaseModule, ModuleType {
     internal var data: DataModel?
     
     public override class func canHandle(config: WidgetModel) -> Bool {
-        switch config.type {
-        case "html", "facebook", "calendar", "googleform":
-            return true
-        default:
-            return false
-        }
+        let supported = [
+            "htmlcode",
+            "htmlurl",
+            "powr",
+            "facebook",
+            "instagramweb",
+            "calendar",
+            "googleform",
+            "googlesites",
+            "tumblr",
+            "acuityscheduling",
+            "chatzy",
+            "trello",
+            "paypal",
+            "wufooform",
+            "dapp"
+        ]
+        
+        return supported.contains(config.type)
     }
     
     public required init() {
