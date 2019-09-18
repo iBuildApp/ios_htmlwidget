@@ -35,7 +35,8 @@ public class HtmlModule: BaseModule, ModuleType {
             "trello",
             "paypal",
             "wufooform",
-            "dapp"
+            "dapp",
+            "jshtml"
         ]
         
         return supported.contains(config.type)

@@ -323,4 +323,20 @@ extension HtmlViewController: WKNavigationDelegate {
 
 import MessageUI
 
-extension HtmlViewController: MFMailComposeViewControllerDelegate { }
+extension HtmlViewController: MFMailComposeViewControllerDelegate {
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        switch result {
+        case .cancelled:
+            break
+        case .saved:
+            break
+        case .sent:
+            self.showAlertController(title: nil, message: Localization.Email.Message.success, buttonTitle: Localization.Common.Text.ok)
+        case .failed:
+            self.showAlertController(title: nil, message: Localization.Email.Message.Error.title, buttonTitle: Localization.Common.Text.ok)
+        default:
+            break
+        }
+        self.dismiss(animated: true, completion: nil)
+    }
+}
